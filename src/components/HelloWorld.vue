@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import environment from '../environment.js'
 import axios from 'axios'
 
 export default {
@@ -39,9 +40,9 @@ export default {
   },
   created () {
     // usa parks data
-    axios.get('https://developer.nps.gov/api/v1/parks?api_key=zjMtTUgYnQmQ32WfyvIBUaKn5QqqwtJnJMVvo2SY')
+    let apiKey = environment.NPS_API_KEY
+    axios.get('https://developer.nps.gov/api/v1/parks?api_key=' + apiKey)
       .then(data => {
-        console.log(data.data.data)
         this.parksData = data.data.data
       })
       .catch(e => this.warningMessage = e)
