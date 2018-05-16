@@ -5,13 +5,15 @@
     </ActionBar>
 
     <StackLayout class="hello-world">
-
+      <!-- Header Elements -->
       <Label class="text-center h2" text="USA Parks" />
       <Label class="body text-center" textWrap=true text="This is where you can find USA Parks Data."/>
-
+      <!-- Native SearchBar -->
+      <SearchBar hint="Search hint" v-model="searchPhrase" @submit="onSearchSubmit" />
+      <!-- Warning || Loading -->
       <Label class="text-danger" v-if="warningMessage" :text="warningMessage" />
-      <Label class="text-danger text-center" v-if="parksData.length === 0" text="Loading data..." />
-
+      <Label class="text-danger text-center" v-if="loading" text="Loading data..." />
+      <!-- Results with Native ListView -->
       <ListView v-show="parksData.length" class="list-group" for="park in parksData" style="height: 1200px">
           <v-template>
             <FlexboxLayout flexDirection="column" class="list-group-item">
@@ -33,19 +35,24 @@ import axios from 'axios'
 export default {
   data () {
     return {
+      loading: false,
       warningMessage: '',
       parksData: [],
-      surprise: false
+      searchPhrase: ''
     }
   },
-  created () {
-    // usa parks data
-    let apiKey = environment.NPS_API_KEY
-    axios.get('https://developer.nps.gov/api/v1/parks?api_key=' + apiKey)
-      .then(data => {
-        this.parksData = data.data.data
-      })
-      .catch(e => this.warningMessage = e)
+  methods: {
+    onSearchSubmit () {
+      // usa parks api documentation 
+      // => https://www.nps.gov/subjects/developer/api-documentation.htm
+      this.loading = true
+      let query = this.searchPhrase.toLowerCase()
+      let apiKey = environment.NPS_API_KEY
+      axios.get(`https://developer.nps.gov/api/v1/parks?q=${query}&api_key=${apiKey}`)
+        .then(data => this.parksData = data.data.data.filter(park => park.name.toLowerCase().includes(query)))
+        .then(() => this.loading = false)
+        .catch(e => this.warningMessage = e)
+      }
   }
 }
 </script>
@@ -70,5 +77,10 @@ export default {
 
 .list-group-item {
   color: black;
+}
+
+/* Utilities */
+.m-tb-1 {
+  margin: 30px 0;
 }
 </style>
