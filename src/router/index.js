@@ -4,7 +4,8 @@ import VueRouter from 'vue-router';
 Vue.use(VueRouter);
 
 import Home from '../components/Home';
-import HelloWorld from '../components/HelloWorld';
+import ParkSearch from '../components/ParkSearch';
+import ParkDetails  from '../components/ParkDetails';
 import Counter from '../components/Counter';
 
 const router = new VueRouter({
@@ -18,11 +19,16 @@ const router = new VueRouter({
       },
     },
     {
-      path: '/hello',
-      component: HelloWorld,
+      path: '/park-search',
+      component: ParkSearch,
       meta: {
-        title: 'Hello World',
+        title: 'Search USA Parks',
       },
+    },
+    {
+      path: '/park-detail/:id',
+      name: 'parkDetail',
+      component: ParkDetails,
     },
     {
       path: '/counter',

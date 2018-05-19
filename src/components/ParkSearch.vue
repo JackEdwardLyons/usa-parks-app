@@ -5,26 +5,40 @@
     </ActionBar>
 
     <StackLayout class="hello-world">
+      
       <!-- Header Elements -->
       <Label class="text-center h2" text="USA Parks" />
       <Label class="body text-center" textWrap=true text="This is where you can find USA Parks Data."/>
+     
       <!-- Native SearchBar -->
       <SearchBar hint="Search hint" v-model="searchPhrase" @submit="onSearchSubmit" />
+     
       <!-- Warning || Loading -->
       <Label class="text-danger" v-if="warningMessage" :text="warningMessage" />
-      <Label class="text-danger text-center" v-if="loading" text="Loading data..." />
+      <Label class="text-danger text-center m-tb-1" v-if="loading" text="Loading data..." />
+      
       <!-- Results with Native ListView -->
       <ListView v-show="parksData.length" class="list-group" for="park in parksData" style="height: 1200px">
+          
           <v-template>
+
             <FlexboxLayout flexDirection="column" class="list-group-item">
+              
               <Label :text="park.name" class="list-group-item-heading" />
               <Label :text="park.description" class="list-group-item" textWrap="true" />
+              
+              <StackLayout>
+                <Button class="btn btn-primary" @tap="$router.push({ name: 'parkDetail', params: { id: park } })">Search Parks</Button>
+              </StackLayout>
+
             </FlexboxLayout>
+
           </v-template>
+
       </ListView>
 
     </StackLayout>
-
+    
   </Page>
 </template>
 
@@ -49,7 +63,10 @@ export default {
       let query = this.searchPhrase.toLowerCase()
       let apiKey = environment.NPS_API_KEY
       axios.get(`https://developer.nps.gov/api/v1/parks?q=${query}&api_key=${apiKey}`)
-        .then(data => this.parksData = data.data.data.filter(park => park.name.toLowerCase().includes(query)))
+        .then(data => {
+          this.parksData = data.data.data.filter(park => park.name.toLowerCase().includes(query))
+          console.log(this.parksData)
+        })
         .then(() => this.loading = false)
         .catch(e => this.warningMessage = e)
       }
@@ -57,30 +74,8 @@ export default {
 }
 </script>
 
-<style scoped>
-.h1, .h2, .h3, .h4, .h5, .h6 {
-  font-weight: bold;
-}
+<style>
 
-.h2 {
-  font-size: 24px;
-}
 
-.hello-world {
-  margin: 20;
-}
 
-.list-group-item-heading {
-  font-weight: bold;
-  color: firebrick;
-}
-
-.list-group-item {
-  color: black;
-}
-
-/* Utilities */
-.m-tb-1 {
-  margin: 30px 0;
-}
 </style>
